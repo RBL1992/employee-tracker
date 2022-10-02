@@ -47,7 +47,7 @@ const start = ()=> {
         .then((answers) => {
             switch (answers.userChoice) {
                 case "view all departments":
-                    department.viewAllDepartments();
+                    viewAllDeparments();
                     start();
                     break;
                 case "view all roles":
@@ -78,20 +78,8 @@ const start = ()=> {
         })
 }
 
-function addADepartment(){
-    inquirer.prompt(
-        {
-            type: 'input',
-            message: 'What department would you like to add?',
-            name: 'department'
-        }
-    ).then((data) =>{
-        let sql = "SELECT * FROM departments";
-        db.query(sql, (err, data.name) => {
-            if (err) throw err;
-        })
-        start();
-    });
+function viewAllDeparments(){
+    "SELECT * FROM departments"
 }
 
 start();
