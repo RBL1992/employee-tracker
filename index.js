@@ -1,16 +1,13 @@
 const inquirer = require('inquirer')
 const mysql = require('mysql2')
 const express = require('express')
-const cors = require('cors')
-const Department = require('./lib/Department.js');
+const cTable = require('console.table');
 
-let department = new Department();
 
 const PORT = process.env.PORT || 3001;
 const app = express();
 
 // Express middleware
-app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
