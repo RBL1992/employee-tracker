@@ -2,6 +2,9 @@ const inquirer = require('inquirer')
 const mysql = require('mysql2')
 const express = require('express')
 const cors = require('cors')
+const Department = require('./lib/Department.js');
+
+let department = new Department();
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -30,19 +33,6 @@ db.connect(err =>{
     console.log('MySQL Connected')
 })
 
-db.query('select * from departments', function (err, depResults) {
-    console.log(depResults);
-})
-
-db.query('select * from role', function (err, roleResults) {
-    console.log(roleResults);
-})
-
-db.query('select * from employee', function (err, empResults) {
-    console.log(empResults);
-})
-
-
 const start = ()=> {
 
     inquirer
@@ -57,7 +47,7 @@ const start = ()=> {
         .then((answers) => {
             switch (answers.userChoice) {
                 case "view all departments":
-                    viewAllDepartments();
+                    department.viewAllDepartments();
                     start();
                     break;
                 case "view all roles":
@@ -86,6 +76,22 @@ const start = ()=> {
                     break;
             }
         })
+}
+
+function addADepartment(){
+    inquirer.prompt(
+        {
+            type: 'input',
+            message: 'What department would you like to add?',
+            name: 'department'
+        }
+    ).then((data) =>{
+        let sql = "SELECT * FROM departments";
+        db.query(sql, (err, data.name) => {
+            if (err) throw err;
+        })
+        start();
+    });
 }
 
 start();
