@@ -19,15 +19,13 @@ const db = mysql.createConnection(
         password: 'rootroot',
         database: 'employeeTracker_db',
     },
-    console.log(`Connected to the employeeTracker_db.`)
+    // console.log(`Connected to the employeeTracker_db.`)
 )
 
 // connect to MySQL
 db.connect(err =>{
-    if(err){
-        throw err
-    }
-    console.log('MySQL Connected')
+    if(err) throw err;
+    // console.log('MySQL Connected');
 })
 
 const start = ()=> {
@@ -38,7 +36,7 @@ const start = ()=> {
                 type: 'list',
                 message: 'Please choose from the following options...',
                 name: 'userChoice',
-                choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update employee role']
+                choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update employee role', "remove employee", "remove role","remove department", "exit"]
             }
         ])
         .then((answers) => {
@@ -57,30 +55,44 @@ const start = ()=> {
                     break;
                 case "add a department":
                     addADepartment();
-                    start();
                     break;
                 case "add a role":
                     addARole();
-                    start();
                     break;
                 case "add an employee":
                     addAnEmployee();
-                    start();
                     break;
                 case "update employee role":
                     updateEmployeeRole();
-                    start();
                     break;
+                case "remove employee":
+                    removeEmployee();
+                    break;
+                case "remove role":
+                    removeRole();
+                    break;
+                case "remove department":
+                    removeDepartment();
+                    break;
+                case "exit":
+                    console.log("Thank you for using my CL Employee Tracker!");
+                    break;
+                default:
+                    console.log(`User Choice (${data.userChoice})is not valid!`);            
             }
         })
 }
 
 function viewAllDeparments(){
-    "SELECT * FROM departments"
-}
+
+    db.query("SHOW TABLES", function (err, result){
+        if (err) throw err;
+        console.table([result]);
+    });
+};
 
 start();
 
 app.listen(PORT, () => {
-    console.log(`Server started on http://localhost:${PORT}`);
+    // console.log(`Server started on http://localhost:${PORT}`);
 });
