@@ -22,12 +22,6 @@ const db = mysql.createConnection(
     // console.log(`Connected to the employeeTracker_db.`)
 )
 
-// // connect to MySQL
-// db.connect(err =>{
-//     if(err) throw err;
-//     // console.log('MySQL Connected');
-// })
-
 const start = () => {
 
     inquirer
@@ -85,7 +79,7 @@ function viewAllDeparments() {
 
     db.query('SELECT * FROM departments;', function (err, results) {
         if (err) throw err;
-        console.table([results]);
+        console.table(results);
     });
     start();
 };
@@ -94,7 +88,7 @@ function viewAllRoles() {
 
     db.query('SELECT * FROM role;', function (err, results) {
         if (err) throw err;
-        console.table([results]);
+        console.table(results);
     });
     start();
 };
@@ -103,7 +97,7 @@ function viewAllEmployees() {
 
     db.query('SELECT * FROM employee;', function (err, results) {
         if (err) throw err;
-        console.table([results]);
+        console.table(results);
     });
     start();
 };
@@ -115,8 +109,9 @@ function addADepartment() {
             message: 'What is the name of the department you want to add?',
             name: 'name'
         }
-    ).then((data)=> {
-        db.query('INSERT INTO departments (name) VALUE (?);', data, (err, res) => {
+    ).then(({name})=> {
+        // console.log(name);
+        db.query('INSERT INTO departments (name) VALUE (?);', name, (err, res) => {
                 if (err) throw err;
                 console.log('Department Created...');
                 start();
@@ -141,8 +136,9 @@ function addARole(){
             message: 'What is the department id of the role you want to add?',
             name: 'department_id'
         }
-    ).then((data)=> {
-        db.query('INSERT INTO role (title, salary, department_id) VALUES (?);', [data], (err, res) => {
+    ).then(({name} )=> {
+        console.log(name);
+        db.query('INSERT INTO role (title, salary, department_id) VALUES (?);', name, (err, res) => {
                 if (err) throw err;
                 console.log('Role Created...');
                 start();
