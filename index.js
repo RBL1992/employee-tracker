@@ -83,7 +83,7 @@ const start = () => {
 
 function viewAllDeparments() {
 
-    db.query('SELECT * FROM departments', function (err, results) {
+    db.query('SELECT * FROM departments;', function (err, results) {
         if (err) throw err;
         console.table([results]);
     });
@@ -92,7 +92,7 @@ function viewAllDeparments() {
 
 function viewAllRoles() {
 
-    db.query('SELECT * FROM role', function (err, results) {
+    db.query('SELECT * FROM role;', function (err, results) {
         if (err) throw err;
         console.table([results]);
     });
@@ -101,7 +101,7 @@ function viewAllRoles() {
 
 function viewAllEmployees() {
 
-    db.query('SELECT * FROM employee', function (err, results) {
+    db.query('SELECT * FROM employee;', function (err, results) {
         if (err) throw err;
         console.table([results]);
     });
@@ -116,9 +116,67 @@ function addADepartment() {
             name: 'name'
         }
     ).then((data)=> {
-        db.query('INSERT INTO departments (name) VALUE (?)', data, (err, res) => {
+        db.query('INSERT INTO departments (name) VALUE (?);', data, (err, res) => {
                 if (err) throw err;
                 console.log('Department Created...');
+                start();
+            })
+    })
+}
+
+function addARole(){
+    inquirer.prompt(
+        {
+            type: 'input',
+            message: 'What is the title of the role you want to add?',
+            name: 'title'
+        },
+        {
+            type: 'num',
+            message: 'What is the salary of the role you want to add?',
+            name: 'salary'
+        },
+        {
+            type: 'num',
+            message: 'What is the department id of the role you want to add?',
+            name: 'department_id'
+        }
+    ).then((data)=> {
+        db.query('INSERT INTO role (title, salary, department_id) VALUES (?);', [data], (err, res) => {
+                if (err) throw err;
+                console.log('Role Created...');
+                start();
+            })
+    })
+}
+
+function addAnEmployee(){
+    inquirer.prompt(
+        {
+            type: 'input',
+            message: 'What is the first name of the employee you want to add?',
+            name: 'first_name'
+        },
+        {
+            type: 'input',
+            message: 'What is the last name of the employee you want to add?',
+            name: 'last_name'
+        },
+        {
+            type: 'num',
+            message: 'What is the role id of the role you want to add?',
+            name: 'role_id'
+        },
+        {
+            type: 'num',
+            message: 'What is the manager id of the role you want to add?',
+            name: 'manager_id'
+        }
+    ).then((data)=> {
+        db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?);', [data], (err, res) => {
+                if (err) throw err;
+                console.log('Employee Created...');
+                start();
             })
     })
 }
@@ -128,7 +186,7 @@ function updateEmployeeRole(){
 }
 
 function removeEmployee(data){
-    db.query(`DELETE FROM employee WHERE id = ?`, data , (err, result) => {
+    db.query(`DELETE FROM employee WHERE id = ?;`, data , (err, result) => {
         if (err) {
           console.log(err);
         }
@@ -137,7 +195,7 @@ function removeEmployee(data){
 }
 
 function removeRole(data){
-    db.query(`DELETE FROM role WHERE id = ?`, data , (err, result) => {
+    db.query(`DELETE FROM role WHERE id = ?;`, data , (err, result) => {
         if (err) {
           console.log(err);
         }
@@ -146,7 +204,7 @@ function removeRole(data){
 }
 
 function removeDepartment(data){
-    db.query(`DELETE FROM departments WHERE id = ?`, data , (err, result) => {
+    db.query(`DELETE FROM departments WHERE id = ?;`, data , (err, result) => {
         if (err) {
           console.log(err);
         }
