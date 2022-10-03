@@ -22,13 +22,13 @@ const db = mysql.createConnection(
     // console.log(`Connected to the employeeTracker_db.`)
 )
 
-// connect to MySQL
-db.connect(err =>{
-    if(err) throw err;
-    // console.log('MySQL Connected');
-})
+// // connect to MySQL
+// db.connect(err =>{
+//     if(err) throw err;
+//     // console.log('MySQL Connected');
+// })
 
-const start = ()=> {
+const start = () => {
 
     inquirer
         .prompt([
@@ -36,7 +36,7 @@ const start = ()=> {
                 type: 'list',
                 message: 'Please choose from the following options...',
                 name: 'userChoice',
-                choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update employee role', "remove employee", "remove role","remove department", "exit"]
+                choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update employee role', 'remove employee', 'remove role', 'remove department', 'exit']
             }
         ])
         .then((answers) => {
@@ -76,20 +76,84 @@ const start = ()=> {
                     break;
                 case "exit":
                     console.log("Thank you for using my CL Employee Tracker!");
-                    break;
-                default:
-                    console.log(`User Choice (${data.userChoice})is not valid!`);            
+                    db.close();
             }
         })
 }
 
-function viewAllDeparments(){
+function viewAllDeparments() {
 
-    db.query("SHOW TABLES", function (err, result){
+    db.query('SELECT * FROM departments', function (err, results) {
         if (err) throw err;
-        console.table([result]);
+        console.table([results]);
     });
+    start();
 };
+
+function viewAllRoles() {
+
+    db.query('SELECT * FROM role', function (err, results) {
+        if (err) throw err;
+        console.table([results]);
+    });
+    start();
+};
+
+function viewAllEmployees() {
+
+    db.query('SELECT * FROM employee', function (err, results) {
+        if (err) throw err;
+        console.table([results]);
+    });
+    start();
+};
+
+function addADepartment() {
+    inquirer.prompt(
+        {
+            type: 'input',
+            message: 'What is the name of the department you want to add?',
+            name: 'name'
+        }
+    ).then((data)=> {
+        db.query('INSERT INTO departments (name) VALUE (?)', data, (err, res) => {
+                if (err) throw err;
+                console.log('Department Created...');
+            })
+    })
+}
+
+function updateEmployeeRole(){
+
+}
+
+function removeEmployee(data){
+    db.query(`DELETE FROM employee WHERE id = ?`, data , (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log(result);
+      });
+}
+
+function removeRole(data){
+    db.query(`DELETE FROM role WHERE id = ?`, data , (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log(result);
+      });
+}
+
+function removeDepartment(data){
+    db.query(`DELETE FROM departments WHERE id = ?`, data , (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log(result);
+      });
+}
+
 
 start();
 
