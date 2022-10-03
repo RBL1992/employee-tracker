@@ -120,25 +120,39 @@ function addADepartment() {
 }
 
 function addARole(){
-    inquirer.prompt(
+    inquirer.prompt([
         {
             type: 'input',
             message: 'What is the title of the role you want to add?',
             name: 'title'
         },
         {
-            type: 'num',
+            type: 'input',
             message: 'What is the salary of the role you want to add?',
-            name: 'salary'
+            name: 'salary',
+            validate: function (input) {
+                console.log(typeof input);
+                 console.log(parseInt(input.replace(/,/g, '')));
+                 console.log(isNaN(parseInt(input.replace(/,/g, ''))));
+
+                if (isNaN(parseFloat(input.replace(/,/g, '')))){
+                    return false
+
+                } else {
+                    return true;
+                }
+
+                }
+    
         },
         {
-            type: 'num',
+            type: 'number',
             message: 'What is the department id of the role you want to add?',
             name: 'department_id'
-        }
-    ).then(({name} )=> {
-        console.log(name);
-        db.query('INSERT INTO role (title, salary, department_id) VALUES (?);', name, (err, res) => {
+        }]
+    ).then((results )=> {
+        console.log(results);
+        db.query('INSERT INTO role (title, salary, department_id) VALUES (?,?,?);', [results.title, results.salary, results.department_id], (err, res) => {
                 if (err) throw err;
                 console.log('Role Created...');
                 start();
