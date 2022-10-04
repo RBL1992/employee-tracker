@@ -130,19 +130,19 @@ function addARole(){
             type: 'input',
             message: 'What is the salary of the role you want to add?',
             name: 'salary',
-            validate: function (input) {
-                console.log(typeof input);
-                 console.log(parseInt(input.replace(/,/g, '')));
-                 console.log(isNaN(parseInt(input.replace(/,/g, ''))));
+            // validate: function (input) {
+            //     console.log(typeof input);
+            //      console.log(parseInt(input.replace(/,/g, '')));
+            //      console.log(isNaN(parseInt(input.replace(/,/g, ''))));
 
-                if (isNaN(parseFloat(input.replace(/,/g, '')))){
-                    return false
+            //     if (isNaN(parseFloat(input.replace(/,/g, '')))){
+            //         return false
 
-                } else {
-                    return true;
-                }
+            //     } else {
+            //         return true;
+            //     }
 
-                }
+            //     }  worked on function with professor to get around mysql not excepting comma is salary input
     
         },
         {
@@ -151,7 +151,7 @@ function addARole(){
             name: 'department_id'
         }]
     ).then((results )=> {
-        console.log(results);
+        // console.log(results);
         db.query('INSERT INTO role (title, salary, department_id) VALUES (?,?,?);', [results.title, results.salary, results.department_id], (err, res) => {
                 if (err) throw err;
                 console.log('Role Created...');
@@ -161,7 +161,7 @@ function addARole(){
 }
 
 function addAnEmployee(){
-    inquirer.prompt(
+    inquirer.prompt([
         {
             type: 'input',
             message: 'What is the first name of the employee you want to add?',
@@ -173,17 +173,17 @@ function addAnEmployee(){
             name: 'last_name'
         },
         {
-            type: 'num',
+            type: 'number',
             message: 'What is the role id of the role you want to add?',
             name: 'role_id'
         },
         {
-            type: 'num',
+            type: 'number',
             message: 'What is the manager id of the role you want to add?',
             name: 'manager_id'
         }
-    ).then((data)=> {
-        db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?);', [data], (err, res) => {
+    ]).then((data)=> {
+        db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);', [data.first_name, data.last_name, data.role_id, data.manager_id], (err, res) => {
                 if (err) throw err;
                 console.log('Employee Created...');
                 start();
@@ -192,7 +192,11 @@ function addAnEmployee(){
 }
 
 function updateEmployeeRole(){
-
+    inquirer.prompt([
+        {
+            
+        }
+    ])
 }
 
 function removeEmployee(data){
