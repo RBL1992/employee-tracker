@@ -161,29 +161,48 @@ function addARole() {
 }
 
 function addAnEmployee() {
-    inquirer.prompt([
-        {
-            type: 'input',
-            message: 'What is the first name of the employee you want to add?',
-            name: 'first_name'
-        },
-        {
-            type: 'input',
-            message: 'What is the last name of the employee you want to add?',
-            name: 'last_name'
-        },
-        {
-            type: 'number',
-            message: 'What is the role id of the role you want to add?',
-            name: 'role_id'
-        },
-        {
-            type: 'number',
-            message: 'What is the manager id of the role you want to add?',
-            name: 'manager_id'
+    let roles = [];
+    let managers = [];
+
+    db.query('SELECT title FROM role', (err, res) => {
+        for (let i = 0; i < res.length; i++) {
+            roles.push(res[i].title)
         }
+    })
+
+    db.query('SELECT CONCAT(employee.first_name, " ",employee.last_name) as manager FROM employee', (err, result) => {
+        if (err) throw err;
+        for (let i = 0; i < result.length; i++) {
+            managers.push(result[i].manager);
+        }
+    })
+
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'What is the employees first name?',
+                name: 'first_name'
+            },
+            {
+                type: 'input',
+                message: 'What is the employees last name?',
+                name: 'last_name'
+            },
+            {
+                type: 'list',
+                message: 'What is the employees role?',
+                name: 'title',
+                choices: roles
+            },
+            {
+                type: 'list',
+                message: 'Who is the employees manager?',
+                name: 'manager',
+                choices: managers
+            }
     ]).then((data) => {
-        db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);', [data.first_name, data.last_name, data.role_id, data.manager_id], (err, res) => {
+        db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);', [data.first_name, data.last_name, data.title, data.manager], (err, res) => {
             if (err) throw err;
             console.log('Employee Created...');
             start();
@@ -199,13 +218,13 @@ function updateEmployeeRole() {
         let roles = [];
 
         for (let i = 0; i < res.length; i++) {
-            employees.push(res[i].first_name)
+            employees.push(res[i].employee_id)
         }
 
         db.query('SELECT * FROM role', (err, res) => {
             if (err) throw err;
         for (let i = 0; i < res.length; i++)
-            roles.push(res[i].title)
+            roles.push(res[i].role_id)
         })
 
         inquirer.prompt([
@@ -225,7 +244,7 @@ function updateEmployeeRole() {
 
         ]).then(({employee_id, role_id}) => {
             // console.log(employee_id, role_id);
-            db.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [employee_id, role_id,], (err, res) => {
+            db.query(`UPDATE employee SET role_id = ? WHERE employee_id = (?)`, [role_id, employee_id], (err, res) => {
                 if (err) throw err;
                 console.log('Employee Role Updated!');
                 start();
