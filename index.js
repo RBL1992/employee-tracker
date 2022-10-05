@@ -109,17 +109,17 @@ function addADepartment() {
             message: 'What is the name of the department you want to add?',
             name: 'name'
         }
-    ).then(({name})=> {
+    ).then(({ name }) => {
         // console.log(name);
         db.query('INSERT INTO departments (name) VALUE (?);', name, (err, res) => {
-                if (err) throw err;
-                console.log('Department Created...');
-                start();
-            })
+            if (err) throw err;
+            console.log('Department Created...');
+            start();
+        })
     })
 }
 
-function addARole(){
+function addARole() {
     inquirer.prompt([
         {
             type: 'input',
@@ -143,24 +143,24 @@ function addARole(){
             //     }
 
             //     }  worked on function with professor to get around mysql not excepting comma is salary input
-    
+
         },
         {
             type: 'number',
             message: 'What is the department id of the role you want to add?',
             name: 'department_id'
         }]
-    ).then((results )=> {
+    ).then((results) => {
         // console.log(results);
         db.query('INSERT INTO role (title, salary, department_id) VALUES (?,?,?);', [results.title, results.salary, results.department_id], (err, res) => {
-                if (err) throw err;
-                console.log('Role Created...');
-                start();
-            })
+            if (err) throw err;
+            console.log('Role Created...');
+            start();
+        })
     })
 }
 
-function addAnEmployee(){
+function addAnEmployee() {
     inquirer.prompt([
         {
             type: 'input',
@@ -182,49 +182,125 @@ function addAnEmployee(){
             message: 'What is the manager id of the role you want to add?',
             name: 'manager_id'
         }
-    ]).then((data)=> {
+    ]).then((data) => {
         db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);', [data.first_name, data.last_name, data.role_id, data.manager_id], (err, res) => {
-                if (err) throw err;
-                console.log('Employee Created...');
-                start();
-            })
+            if (err) throw err;
+            console.log('Employee Created...');
+            start();
+        })
     })
 }
 
-function updateEmployeeRole(){
-    inquirer.prompt([
-        {
-            
+function updateEmployeeRole() {
+    db.query('SELECT * FROM employee', (err, res) => {
+        if (err) throw err;
+
+        let employees = [];
+        let roles = [];
+
+        for (let i = 0; i < res.length; i++) {
+            employees.push(res[i].first_name)
         }
-    ])
+
+        db.query('SELECT * FROM role', (err, res) => {
+            if (err) throw err;
+        for (let i = 0; i < res.length; i++)
+            roles.push(res[i].title)
+        })
+
+        inquirer.prompt([
+            {
+                type: 'list',
+                message: 'Whose role do you want to update?',
+                name: 'employee_id',
+                choices: employees,
+            },
+            {
+                type: 'list',
+                message: 'What do you want the updated role to be?',
+                name: 'role_id',
+                choices: roles,
+
+            }
+
+        ]).then(({employee_id, role_id}) => {
+            // console.log(employee_id, role_id);
+            db.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [employee_id, role_id,], (err, res) => {
+                if (err) throw err;
+                console.log('Employee Role Updated!');
+                start();
+            })
+        })
+    })
 }
 
-function removeEmployee(data){
-    db.query(`DELETE FROM employee WHERE id = ?;`, data , (err, result) => {
-        if (err) {
-          console.log(err);
+function removeEmployee() {
+    db.query('SELECT * FROM employee', (err,res) => {
+        if (err) throw err;
+
+        let employees = [];
+
+        for (let i = 0; i < res.length; i++) {
+            employees.push(res[i].first_name)
         }
-        console.log(result);
-      });
+
+        inquirer.prompt([
+            {
+                type: 'list',
+                message: 'Which employee do you want to delete?',
+                name: 'first_name',
+                choices: employees,
+            },
+        ]).then(({first_name}) => {
+            db.query(`DELETE FROM employee WHERE first_name = (?);`, first_name, (err, result) => {
+                if (err) {
+                    console.log(err);
+                }
+                console.log(result + 'was deleted...');
+                start();
+            });
+        }) 
+    }) 
+    
 }
 
-function removeRole(data){
-    db.query(`DELETE FROM role WHERE id = ?;`, data , (err, result) => {
-        if (err) {
-          console.log(err);
+function removeRole() {
+    db.query('SELECT * FROM role', (err,res) => {
+        if (err) throw err;
+
+        let roles = [];
+
+        for (let i = 0; i < res.length; i++) {
+            roles.push(res[i].title)
         }
-        console.log(result);
-      });
+
+        inquirer.prompt([
+            {
+                type: 'list',
+                message: 'Which role do you want to delete?',
+                name: 'title',
+                choices: roles,
+            },
+        ]).then(({title}) => {
+            db.query(`DELETE FROM role WHERE title = (?);`, title, (err, result) => {
+                if (err) {
+                    console.log(err);
+                }
+                console.log(result + 'was deleted...');
+                start();
+            });
+        }) 
+    }) 
 }
 
-function removeDepartment(data){
-    db.query(`DELETE FROM departments WHERE id = ?;`, data , (err, result) => {
-        if (err) {
-          console.log(err);
-        }
-        console.log(result);
-      });
-}
+// function removeDepartment(data) {
+//     db.query(`DELETE FROM departments WHERE id = (?);`, data, (err, result) => {
+//         if (err) {
+//             console.log(err);
+//         }
+//         console.log(result);
+//     });
+// }
 
 
 start();
